@@ -2,44 +2,13 @@ version: '3.1'
 
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:16.1.1
-    env_file:
-      - env_files/common.env
-      - env_files/keycloak.env
+    image: quay.io/keycloak/keycloak:25.0.1
     environment:
-      DB_ADDR: keycloak-db
-    secrets:
-      - keycloak-db-user-password
-      - keycloak-admin-password
-      - quantimage2-admin-password
-    volumes:
-      - ./keycloak/quantimage2_theme:/opt/jboss/keycloak/themes/quantimage-v2
-      - ./keycloak/QuantImage-v2-realm.json:/QuantImage-v2-realm.json
-      - ./keycloak/startup-scripts:/opt/jboss/startup-scripts
-      - ./keycloak/exports:/tmp/export
-      - ./keycloak/export-realm.sh:/opt/jboss/tools/export-realm.sh
-    depends_on:
-      - keycloak-db
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: auth.radassist.ai
+      KC_HOSTNAME_STRICT: 'true'
+      KC_PROXY: edge
     ports:
-      - "6666:8080"
-    command: ["-b", "0.0.0.0", "-Dkeycloak.profile=preview", "-Dkeycloak.migration.strategy=IGNORE_EXISTING"]
-
-  keycloak-db:
-    image: postgres
-    env_file:
-      - env_files/keycloak.env
-    secrets:
-      - keycloak-db-user-password
-    volumes:
-      - keycloak-db-data:/var/lib/postgresql/data
-
-secrets:
-  keycloak-db-user-password:
-    file: secrets/keycloak_db_user_password
-  keycloak-admin-password:
-    file: secrets/keycloak_admin_password
-  quantimage2-admin-password:
-    file: secrets/quantimage2_admin_password
-
-volumes:
-  keycloak-db-data:
+      - "7777:8080"
+    command: ["start-dev"]
